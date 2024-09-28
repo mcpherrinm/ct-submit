@@ -1,28 +1,63 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Test</title>
+    <title>Submit to CT</title>
 </head>
 <body>
-<h1>Test</h1>
-<p>Just a test</p>
+<h1>Submit to CT</h1>
 <form>
     <div>
         <label for="url">Log base URL:</label>
         <input id="url" type="url" size="70"
-               placeholder="https://oak.ct.letsencrypt.org/2020"
+               placeholder="https://oak.ct.letsencrypt.org/2025h1"
         />
     </div>
     <div>
         <label for="cert">Certificate Chain:</label>
     </div>
     <div>
-        <textarea cols="70" rows="30" id="cert"></textarea>
+        <textarea cols="70" rows="30" id="cert" placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"></textarea>
     </div>
     <div>
-        <button>Submit</button>
-        <button>Generate curl</button>
+        <button id="submit">Submit</button>
     </div>
+
+    <script>
+        function pemDecode(pem) {
+            // This is not a place of honour
+
+            let pem_regex = /-----BEGIN CERTIFICATE-----([A-Za-z0-9/+=\s]+)-----END CERTIFICATE-----/g;
+
+            let data = []
+            for (const match of pem.matchAll(pem_regex)) {
+                data.push(match[1].replace(/\s/gm,''));
+            }
+
+            return data;
+        }
+
+        document.getElementById('submit').addEventListener('click',
+            function(event) {
+                event.preventDefault();
+
+                let form = event.target.closest('form');
+                let url = form.querySelector('#url').value;
+                let chain = pemDecode(form.querySelector('#cert').value);
+                console.log("Submitting to URL:");
+                console.log(url);
+                console.log("Cert PEM:");
+                console.log(chain);
+
+                let xhr = new XMLHttpRequest();
+                xhr.open("POST", url + "/ct/v1/add-chain", true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.onreadystatechange = function() {
+                    console.log(xhr.status)
+                    console.log(xhr.responseText)
+                }
+                xhr.send(JSON.stringify({"chain": chain}))
+            });
+    </script>
 </form>
 </body>
 </html>
