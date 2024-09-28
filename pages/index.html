@@ -1,9 +1,28 @@
-<html>
-  <head>
+<!doctype html>
+<html lang="en">
+<head>
     <title>Test</title>
-  </head>
-  <body>
-    <h1>Test</h1>
-    <p>Just a test</p>
-  </body>
+</head>
+<body>
+<h1>Test</h1>
+<p>Just a test</p>
+<form>
+    <div>
+        <label for="url">Log base URL:</label>
+        <input id="url" type="url" size="70"
+               placeholder="https://oak.ct.letsencrypt.org/2020"
+        />
+    </div>
+    <div>
+        <label for="cert">Certificate Chain:</label>
+    </div>
+    <div>
+        <textarea cols="70" rows="30" id="cert"></textarea>
+    </div>
+    <div>
+        <button>Submit</button>
+        <button>Generate curl</button>
+    </div>
+</form>
+</body>
 </html>
