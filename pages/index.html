@@ -22,6 +22,9 @@
         <button id="submit">Submit</button>
     </div>
 
+    <div id="respcode"></div>
+    <div id="response"></div>
+
     <script>
         function pemDecode(pem) {
             // This is not a place of honour
@@ -52,8 +55,12 @@
                 xhr.open("POST", url + "/ct/v1/add-chain", true);
                 xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.onreadystatechange = function() {
-                    console.log(xhr.status)
-                    console.log(xhr.responseText)
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        console.log(xhr.status);
+                        console.log(xhr.responseText);
+                        document.querySelector('#respcode').innerText = xhr.status + " " + xhr.statusText
+                        document.querySelector('#response').innerText = xhr.responseText
+                    }
                 }
                 xhr.send(JSON.stringify({"chain": chain}))
             });
