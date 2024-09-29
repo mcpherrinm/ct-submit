@@ -48,6 +48,32 @@
             return data;
         }
 
+        function dropPrefix(prefix, str) {
+            if (str.startsWith(prefix)) {
+                str = str.substring(prefix.length)
+            }
+            return str.trim()
+        }
+
+        function dropSuffix(suffix, str) {
+            if (str.endsWith(suffix)) {
+                str = str.substring(0, str.length - suffix.length)
+            }
+            return str.trim()
+        }
+
+
+        function munge(operator, description) {
+            description = dropPrefix(operator, description)
+            description = dropSuffix("CT Log", description)
+            description = dropSuffix("CT log", description)
+            description = dropSuffix("Log", description)
+            description = dropSuffix("log", description)
+            description = dropPrefix("'", description)
+            description = dropSuffix("'", description)
+            return description
+        }
+
         document.getElementById('submit').addEventListener('click',
             function(event) {
                 event.preventDefault();
@@ -87,7 +113,7 @@
                     group.label = operator.name;
                     for (const log of operator.logs) {
                         let option = document.createElement("option")
-                        option.label = log.description;
+                        option.label = munge(operator.name, log.description);
                         option.value = log.url;
                         group.appendChild(option);
                     }
