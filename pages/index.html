@@ -7,9 +7,14 @@
 <h1>Submit to CT</h1>
 <form>
     <div>
+        <label for="log">Choose CT Log:</label>
+        <select id="log">
+        </select>
+    </div>
+    <div>
         <label for="url">Log base URL:</label>
         <input id="url" type="url" size="70"
-               placeholder="https://oak.ct.letsencrypt.org/2025h1"
+               placeholder="https://oak.ct.letsencrypt.org/2025h1/"
         />
     </div>
     <div>
@@ -52,7 +57,7 @@
                 console.log(chain);
 
                 let xhr = new XMLHttpRequest();
-                xhr.open("POST", url + "/ct/v1/add-chain", true);
+                xhr.open("POST", url + "ct/v1/add-chain", true);
                 xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState === XMLHttpRequest.DONE) {
@@ -64,6 +69,34 @@
                 }
                 xhr.send(JSON.stringify({"chain": chain}))
             });
+
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", "https://www.gstatic.com/ct/log_list/v3/log_list.json", true)
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                let logdata = JSON.parse(xhr.responseText);
+                console.log(logdata)
+                let log_select = document.querySelector("#log")
+                for (const operator of logdata.operators) {
+                    console.log(operator)
+                    let group = document.createElement("optgroup");
+                    group.label = operator.name;
+                    for (const log of operator.logs) {
+                        let option = document.createElement("option")
+                        option.label = log.description;
+                        option.value = log.url;
+                        group.appendChild(option);
+                    }
+                    log_select.appendChild(group)
+                }
+                log_select.onchange = function() {
+                    console.log(log_select.selectedIndex)
+                    console.log(log_select.options[log_select.selectedIndex])
+                    document.querySelector('#url').value = log_select.options[log_select.selectedIndex].value;
+                }
+            }
+        }
+        xhr.send();
     </script>
 </form>
 </body>
